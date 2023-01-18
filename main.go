@@ -6,19 +6,46 @@ import (
 	"image/png"
 	"math/cmplx"
 	"net/http"
+	"strconv"
 )
 
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
-	const (
-		xmin, ymin, xmax, ymax = -2, -2, +2, +2
-		width, height          = 1024, 1024
-	)
+
+	xmin, err := strconv.ParseFloat(r.FormValue("xmin"), 64)
+	if err != nil {
+		xmin = -2
+	}
+
+	ymin, err := strconv.ParseFloat(r.FormValue("ymin"), 64)
+	if err != nil {
+		ymin = -2
+	}
+
+	xmax, err := strconv.ParseFloat(r.FormValue("xmax"), 64)
+	if err != nil {
+		xmax = 2
+	}
+
+	ymax, err := strconv.ParseFloat(r.FormValue("ymax"), 64)
+	if err != nil {
+		ymax = 2
+	}
+
+	width, err := strconv.Atoi(r.FormValue("width"))
+	if err != nil {
+		width = 1024
+	}
+
+	height, err := strconv.Atoi(r.FormValue("height"))
+	if err != nil {
+		height = 1024
+	}
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
-		y := float64(py)/height*(ymax-ymin) + ymin
+		y := float64(py)/float64(height)*(ymax-ymin) + ymin
 		for px := 0; px < width; px++ {
-			x := float64(px)/width*(xmax-xmin) + xmin
+			x := float64(px)/float64(width)*(xmax-xmin) + xmin
 			z := complex(x, y)
 			img.Set(px, py, mandelbrot(z))
 		}
