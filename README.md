@@ -1,6 +1,6 @@
 # mandelbrot-by-cloudfunc
 
-`Cloud Functions`でマンデルブロ集合を描写するAPIを提供してみる。  
+🍒🍒🍒 `Cloud Functions`でマンデルブロ集合を描写するAPIを提供してみる。  
 AWSのlambdaやAzureのFunctionsと比較すると少し開発しにくいかも、、、  
 
 ## 補足
