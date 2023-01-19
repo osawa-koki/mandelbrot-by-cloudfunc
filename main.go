@@ -41,30 +41,42 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 		height = 1024
 	}
 
+	_iter, err := strconv.Atoi(r.FormValue("iter"))
+	var iter uint8
+	if err != nil {
+		iter = 200
+	} else {
+		iter = uint8(_iter)
+	}
+
+	_thre, err := strconv.Atoi(r.FormValue("thre"))
+	var thre uint8
+	if err != nil {
+		thre = 15
+	} else {
+		thre = uint8(_thre)
+	}
+
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
 		y := float64(py)/float64(height)*(ymax-ymin) + ymin
 		for px := 0; px < width; px++ {
 			x := float64(px)/float64(width)*(xmax-xmin) + xmin
 			z := complex(x, y)
-			img.Set(px, py, mandelbrot(z))
+			color := (func() color.Color {
+				var v complex128
+				for n := uint8(0); n < iter; n++ {
+					v = v*v + z
+					if cmplx.Abs(v) > 2 {
+						return color.Gray{255 - thre*n}
+					}
+				}
+				return color.Black
+			})()
+			img.Set(px, py, color)
 		}
 	}
 
 	w.Header().Set("Content-Type", "image/png")
 	png.Encode(w, img)
-}
-
-func mandelbrot(z complex128) color.Color {
-	const iterations = 200
-	const contrast = 15
-
-	var v complex128
-	for n := uint8(0); n < iterations; n++ {
-		v = v*v + z
-		if cmplx.Abs(v) > 2 {
-			return color.Gray{255 - contrast*n}
-		}
-	}
-	return color.Black
 }
